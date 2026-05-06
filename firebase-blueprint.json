@@ -1,0 +1,39 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "Visitor contact information collected for follow-up and community engagement.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the visitor" },
+        "phone": { "type": "string", "description": "Phone number or WhatsApp" },
+        "email": { "type": "string", "description": "Email address" },
+        "reachOutReason": { "type": "string", "description": "Reason for reaching out (e.g., volunteering, donation)" },
+        "interests": { "type": "array", "items": { "type": "string" }, "description": "Areas of interest (orphanage, feeding, education)" },
+        "referredBy": { "type": "string", "description": "Referral code if available" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone", "createdAt"]
+    },
+    "Stat": {
+      "title": "Stat",
+      "description": "General website statistics and counters.",
+      "type": "object",
+      "properties": {
+        "value": { "type": "number", "description": "The current count value" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["value", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "leads/{leadId}": {
+      "schema": "Lead",
+      "description": "Contact info submitted by visitors."
+    },
+    "global_stats/visitors": {
+      "schema": "Stat",
+      "description": "Total unique visitor count."
+    }
+  }
+}

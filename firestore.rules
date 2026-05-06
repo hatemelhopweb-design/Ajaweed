@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { 
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) || 
+        request.auth.token.email == 'hatem.elhopweb@gmail.com'
+      ); 
+    }
+
+    // Leads collection
+    match /leads/{leadId} {
+      allow create: if 
+        request.resource.data.keys().hasAll(['name', 'phone', 'createdAt']) &&
+        // Allow exactly 3 fields (name, phone, createdAt) OR 4 if email is included
+        (request.resource.data.keys().size() == 3 || (request.resource.data.keys().size() == 4 && request.resource.data.keys().hasAll(['email']))) &&
+        request.resource.data.name is string && request.resource.data.name.size() <= 100 &&
+        request.resource.data.phone is string && request.resource.data.phone.size() <= 30 &&
+        (!request.resource.data.keys().hasAll(['email']) || (request.resource.data.email is string && request.resource.data.email.size() <= 100)) &&
+        request.resource.data.createdAt == request.time;
+      
+      allow read, list: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Global Stats
+    match /global_stats/visitors {
+      allow read, get: if true;
+      allow create: if 
+        request.resource.data.keys().hasAll(['value', 'updatedAt']) &&
+        request.resource.data.value == 1 &&
+        request.resource.data.updatedAt == request.time;
+      allow update: if 
+        request.resource.data.diff(resource.data).affectedKeys().hasAny(['value', 'updatedAt']) &&
+        request.resource.data.value is number &&
+        request.resource.data.updatedAt == request.time;
+    }
+
+    // Admin whitelist for UI convenience
+    match /admins/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+    }
+  }
+}

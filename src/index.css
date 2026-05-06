@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-amiri: "Amiri", serif;
+  --font-quran: "Scheherazade New", serif;
+  
+  --color-gold: #C9A84C;
+  --color-gold-light: #E8C97A;
+  --color-gold-dark: #8B6914;
+  --color-emerald: #1B6B45;
+  --color-emerald-light: #2D9967;
+  --color-emerald-dark: #0D3D26;
+  --color-ivory: #F8F4EC;
+  --color-ivory-dark: #EDE6D4;
+  --color-deep: #0A1A12;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    direction: rtl;
+  }
+  body {
+    @apply font-sans bg-deep text-ivory antialiased;
+  }
+}
+
+.font-amiri {
+  font-family: var(--font-amiri);
+}
+
+.font-quran {
+  font-family: var(--font-quran);
+}
